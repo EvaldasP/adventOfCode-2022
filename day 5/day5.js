@@ -35,7 +35,7 @@ console.log(topCreateOfEachStack);
 
 // --- Part Two ---
 
-// In second part crane are able to pick multiple crates at once so basically I do not need to to reverse spliced array (crates needed to move)
+// In second part crane are able to pick multiple crates at once so basically I do not need to reverse spliced array (crates needed to move)
 
 const topCrateOfEachStackPart2 = Object.values(doOperations(false))
   .map((stack) => stack[0])
