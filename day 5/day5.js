@@ -2,20 +2,6 @@ const { readFileSync } = require("fs");
 
 // --- Part One ---
 
-function syncReadFile(filename) {
-  const contents = readFileSync(filename, "utf-8");
-
-  var arr = contents.split(/\r?\n/);
-
-  return arr;
-}
-
-function getStringBetween(str, start, end) {
-  const result = str.match(new RegExp(start + "(.*)" + end));
-
-  return result[1];
-}
-
 const moves = syncReadFile("./input.txt");
 
 // arrays represent stacks of crates [0] is the top crate
@@ -41,19 +27,7 @@ const stacks = {
   9: ["J", "P", "W"],
 };
 
-const stacksPart2 = structuredClone(stacks);
-
-moves.forEach((moveString) => {
-  const move = +getStringBetween(moveString, "move ", " from");
-  const from = +getStringBetween(moveString, "from ", " to");
-  const to = +getStringBetween(moveString, "to ", "");
-
-  const createsToMove = stacks[from].splice(0, move).reverse();
-
-  stacks[to].unshift(...createsToMove);
-});
-
-const topCreateOfEachStack = Object.values(stacks)
+const topCreateOfEachStack = Object.values(doOperations())
   .map((stack) => stack[0])
   .join("");
 
@@ -61,18 +35,44 @@ console.log(topCreateOfEachStack);
 
 // --- Part Two ---
 
-moves.forEach((moveString) => {
-  const move = +getStringBetween(moveString, "move ", " from");
-  const from = +getStringBetween(moveString, "from ", " to");
-  const to = +getStringBetween(moveString, "to ", "");
+// In second part crane are able to pick multiple crates at once so basically I do not need to to reverse spliced array (crates needed to move)
 
-  const createsToMove = stacksPart2[from].splice(0, move);
-
-  stacksPart2[to].unshift(...createsToMove);
-});
-
-const topCreateOfEachStackPart2 = Object.values(stacksPart2)
+const topCrateOfEachStackPart2 = Object.values(doOperations(false))
   .map((stack) => stack[0])
   .join("");
 
-console.log(topCreateOfEachStackPart2);
+console.log(topCrateOfEachStackPart2);
+
+// --- Functions ---
+
+function syncReadFile(filename) {
+  const contents = readFileSync(filename, "utf-8");
+
+  var arr = contents.split(/\r?\n/);
+
+  return arr;
+}
+
+function getStringBetween(str, start, end) {
+  const result = str.match(new RegExp(start + "(.*)" + end));
+
+  return result[1];
+}
+
+function doOperations(reverse = true) {
+  const stacksCopy = structuredClone(stacks);
+
+  moves.forEach((moveString) => {
+    const move = +getStringBetween(moveString, "move ", " from");
+    const from = +getStringBetween(moveString, "from ", " to");
+    const to = +getStringBetween(moveString, "to ", "");
+
+    const cratesToMove = stacksCopy[from].splice(0, move);
+
+    if (reverse) cratesToMove.reverse();
+
+    stacksCopy[to].unshift(...cratesToMove);
+  });
+
+  return stacksCopy;
+}
